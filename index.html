@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -61,6 +61,8 @@ button{
 button:hover{
   background:#0ea5e9;
 }
+</style>
+
 </style>
 </head>
 <div id="loginPage">
@@ -174,7 +176,20 @@ oninput="hitung('jumlah8','total8','react')">
 <p>Rp <span id="total8">0</span></p>
 <button onclick="order('react','link8','jumlah8')">Order</button>
 </div>
+<div id="overlay">
+  <div class="box">
+    
+    <div class="spinner"></div>
+    <p id="statusText">Memproses order...</p>
 
+    <div class="progress">
+      <div id="bar"></div>
+    </div>
+
+    <div id="check" style="display:none;">✔</div>
+
+  </div>
+</div>
 </div>
 
 <script>
@@ -220,14 +235,16 @@ function getHarga(key, defaultVal){
   return Number(localStorage.getItem(key)) || defaultVal;
 }
 const harga = {
-  igf: 8,
-  igl: 6,
-  igv: 1,
-  ttf: 35,
-  ttl: 7,
-  ttv: 1,
-  wac: 50,
-  react: 30
+  igf: getHarga("igf", 8),
+  igl: getHarga("igl", 6),
+  igv: getHarga("igv", 1),
+
+  ttf: getHarga("ttf", 35),
+  ttl: getHarga("ttl", 7),
+  ttv: getHarga("ttv", 1),
+
+  wac: getHarga("wac", 50),
+  react: getHarga("react", 30)
 };
 
 const minOrder = 500;
@@ -243,6 +260,10 @@ function order(jenis, linkId, jumlahId){
   let link = document.getElementById(linkId).value;
   let jumlah = document.getElementById(jumlahId).value;
   let total = jumlah * harga[jenis];
+  
+  function getHarga(key, defaultVal){
+  return Number(localStorage.getItem(key)) || defaultVal;
+}
 
   if(!link) return alert("Isi link dulu");
   if(total < minOrder) return alert("Minimal Rp 500");
@@ -254,7 +275,37 @@ Jumlah: ${jumlah}
 Total: Rp ${total}
 Link: ${link}`;
 
-  window.open("https://wa.me/62895324562321?text=" + encodeURIComponent(pesan));
+  // tampilkan overlay
+  let overlay = document.getElementById("overlay");
+  let bar = document.getElementById("bar");
+  let check = document.getElementById("check");
+  let text = document.getElementById("statusText");
+
+  overlay.style.display = "flex";
+  bar.style.width = "0%";
+  check.style.display = "none";
+
+  // animasi progress
+  setTimeout(() => {
+    bar.style.width = "100%";
+  }, 100);
+
+  // selesai → centang
+  setTimeout(() => {
+    document.querySelector(".spinner").style.display = "none";
+    text.innerText = "Berhasil! Mengalihkan ke WhatsApp...";
+    check.style.display = "block";
+  }, 1500);
+
+  // buka WA
+  setTimeout(() => {
+    window.open("https://wa.me/62895324562321?text=" + encodeURIComponent(pesan));
+    overlay.style.display = "none";
+    
+    // reset
+    document.querySelector(".spinner").style.display = "block";
+    text.innerText = "Memproses order...";
+  }, 2300);
 }
 </script>
 
