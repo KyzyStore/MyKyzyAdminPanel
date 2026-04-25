@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -13,10 +13,7 @@ body{
   text-align:center;
 }
 
-h1{
-  margin:20px;
-  color:#38bdf8;
-}
+h1{ color:#38bdf8; }
 
 .container{
   display:flex;
@@ -30,18 +27,12 @@ h1{
   border-radius:12px;
   padding:16px;
   margin:10px;
-  width:300px;
-  box-shadow: 0 0 15px rgba(56,189,248,.3);
-  transition:0.3s;
+  width:260px;
 }
 
-.card:hover{
-  transform:scale(1.03);
-}
-
-input{
+input, select{
   width:90%;
-  padding:10px;
+  padding:8px;
   margin:6px 0;
   border:none;
   border-radius:8px;
@@ -53,261 +44,232 @@ button{
   border:none;
   border-radius:8px;
   background:#38bdf8;
-  color:black;
-  font-weight:bold;
   cursor:pointer;
 }
 
-button:hover{
-  background:#0ea5e9;
+#overlay{
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.8);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+
+.spinner{
+  border:5px solid #333;
+  border-top:5px solid #38bdf8;
+  border-radius:50%;
+  width:40px;
+  height:40px;
+  animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+  100%{transform:rotate(360deg);}
 }
 </style>
-
-</style>
 </head>
-<div id="loginPage">
-  <h2>🔐 Login Admin</h2>
-  <input id="user" placeholder="Username"><br><br>
-  <input id="pass" type="password" placeholder="Password"><br><br>
-  <button onclick="login()">Login</button>
-</div>
-
-<div id="adminPage" style="display:none;">
-  <h2>⚙️ Admin Panel</h2>
-
-  <p>Harga IG Followers</p>
-  <input id="igf"><br>
-
-  <p>Harga IG Likes</p>
-  <input id="igl"><br>
-
-  <p>Harga TikTok Followers</p>
-  <input id="ttf"><br>
-
-  <p>Harga WA Member</p>
-  <input id="wac"><br><br>
-
-  <button onclick="simpan()">💾 Simpan Harga</button>
-  <button onclick="logout()">🚪 Logout</button>
-</div>
 
 <body>
 
+<!-- LOGIN -->
+<div id="loginPage">
+<h2>🔐 Admin Login</h2>
+<input id="user" placeholder="Username"><br>
+<input id="pass" type="password" placeholder="Password"><br>
+<button onclick="login()">Login</button>
+</div>
+
+<!-- ADMIN -->
+<div id="adminPage" style="display:none;">
+<h2>⚙️ Admin Panel</h2>
+
+<div id="adminList"></div>
+
+<button onclick="simpan()">💾 Simpan</button>
+<button onclick="logout()">🚪 Logout</button>
+</div>
+
 <h1>🚀 KYZY SMM PANEL</h1>
 
-<div class="container">
+<div class="container" id="panel"></div>
 
-<!-- IG FOLLOWERS -->
-<div class="card">
-<h3>👥 IG Followers</h3>
-<input id="link1" placeholder="Link IG">
-<input id="jumlah1" type="number" placeholder="Jumlah"
-oninput="hitung('jumlah1','total1','igf')">
-<p>Rp <span id="total1">0</span></p>
-<button onclick="order('igf','link1','jumlah1')">Order</button>
-</div>
-
-<!-- IG LIKES -->
-<div class="card">
-<h3>❤️ IG Likes</h3>
-<input id="link2" placeholder="Link Post">
-<input id="jumlah2" type="number"
-oninput="hitung('jumlah2','total2','igl')">
-<p>Rp <span id="total2">0</span></p>
-<button onclick="order('igl','link2','jumlah2')">Order</button>
-</div>
-
-<!-- IG VIEWS -->
-<div class="card">
-<h3>👀 IG Views</h3>
-<input id="link3" placeholder="Link Reels">
-<input id="jumlah3" type="number"
-oninput="hitung('jumlah3','total3','igv')">
-<p>Rp <span id="total3">0</span></p>
-<button onclick="order('igv','link3','jumlah3')">Order</button>
-</div>
-
-<!-- TIKTOK FOLLOWERS -->
-<div class="card">
-<h3>🎵 TikTok Followers</h3>
-<input id="link4" placeholder="Link TikTok">
-<input id="jumlah4" type="number"
-oninput="hitung('jumlah4','total4','ttf')">
-<p>Rp <span id="total4">0</span></p>
-<button onclick="order('ttf','link4','jumlah4')">Order</button>
-</div>
-
-<!-- TIKTOK LIKES -->
-<div class="card">
-<h3>❤️ TikTok Likes</h3>
-<input id="link5" placeholder="Link Video">
-<input id="jumlah5" type="number"
-oninput="hitung('jumlah5','total5','ttl')">
-<p>Rp <span id="total5">0</span></p>
-<button onclick="order('ttl','link5','jumlah5')">Order</button>
-</div>
-
-<!-- TIKTOK VIEWS -->
-<div class="card">
-<h3>👀 TikTok Views</h3>
-<input id="link6" placeholder="Link Video">
-<input id="jumlah6" type="number"
-oninput="hitung('jumlah6','total6','ttv')">
-<p>Rp <span id="total6">0</span></p>
-<button onclick="order('ttv','link6','jumlah6')">Order</button>
-</div>
-
-<!-- WA MEMBER -->
-<div class="card">
-<h3>📢 Member Saluran WA</h3>
-<input id="link7" placeholder="Link Saluran">
-<input id="jumlah7" type="number"
-oninput="hitung('jumlah7','total7','wac')">
-<p>Rp <span id="total7">0</span></p>
-<button onclick="order('wac','link7','jumlah7')">Order</button>
-</div>
-
-<!-- REACTION -->
-<div class="card">
-<h3>🔥 Reaction WA</h3>
-<input id="link8" placeholder="Link Post">
-<input id="jumlah8" type="number"
-oninput="hitung('jumlah8','total8','react')">
-<p>Rp <span id="total8">0</span></p>
-<button onclick="order('react','link8','jumlah8')">Order</button>
-</div>
+<!-- overlay -->
 <div id="overlay">
-  <div class="box">
-    
-    <div class="spinner"></div>
-    <p id="statusText">Memproses order...</p>
-
-    <div class="progress">
-      <div id="bar"></div>
-    </div>
-
-    <div id="check" style="display:none;">✔</div>
-
-  </div>
+<div>
+<div class="spinner"></div>
+<p>Memproses...</p>
 </div>
 </div>
 
 <script>
-    // LOGIN
-function login(){
-  let u = document.getElementById("user").value;
-  let p = document.getElementById("pass").value;
 
-  if(u === "KyzyStore" && p === "Ditzz0194729"){
-    document.getElementById("loginPage").style.display="none";
-    document.getElementById("adminPage").style.display="block";
-    loadHarga();
-  } else {
-    alert("Salah!");
-  }
+// ===== DATA =====
+const services = [
+{key:"igf", name:"IG Followers", harga:8},
+{key:"igl", name:"IG Likes", harga:6},
+{key:"igv", name:"IG Views", harga:1},
+
+{key:"ttf", name:"TikTok Followers", harga:35},
+{key:"ttl", name:"TikTok Likes", harga:7},
+{key:"ttv", name:"TikTok Views", harga:1},
+
+{key:"wac", name:"WA Member", harga:50},
+{key:"react", name:"WA Reaction", harga:30},
+
+{key:"nokos", name:"Nokos Indo", harga:5000}
+];
+
+// ===== GET =====
+function getHarga(k,d){ return Number(localStorage.getItem(k))||d }
+function getStatus(k){ return localStorage.getItem("status_"+k)||"on" }
+function getStok(){ return Number(localStorage.getItem("stokNokos"))||0 }
+
+// ===== BUILD PANEL =====
+function buildPanel(){
+let panel = document.getElementById("panel");
+panel.innerHTML="";
+
+services.forEach((s,i)=>{
+panel.innerHTML+=`
+<div class="card">
+<h3>${s.name}</h3>
+<p id="status_${s.key}"></p>
+
+<input id="link${i}" placeholder="Masukkan link">
+<input id="jumlah${i}" type="number"
+oninput="hitung('jumlah${i}','total${i}','${s.key}')">
+
+<p>Rp <span id="total${i}">0</span></p>
+
+<button id="btn_${s.key}"
+onclick="order('${s.key}','link${i}','jumlah${i}')">Order</button>
+</div>`;
+});
 }
 
-// LOGOUT
-function logout(){
-  location.reload();
+// ===== BUILD ADMIN =====
+function buildAdmin(){
+let html="";
+services.forEach(s=>{
+html+=`
+<p>${s.name}</p>
+Harga: <input id="${s.key}"><br>
+Status:
+<select id="status_${s.key}">
+<option value="on">ON</option>
+<option value="off">OFF</option>
+</select><br><br>
+`;
+});
+
+html+=`<p>Stok Nokos</p>
+<input id="stokNokos"><br><br>`;
+
+document.getElementById("adminList").innerHTML=html;
 }
 
-// SIMPAN HARGA
+// ===== LOAD ADMIN =====
+function loadAdmin(){
+services.forEach(s=>{
+document.getElementById(s.key).value = getHarga(s.key,s.harga);
+document.getElementById("status_"+s.key).value = getStatus(s.key);
+});
+document.getElementById("stokNokos").value = getStok();
+}
+
+// ===== SIMPAN =====
 function simpan(){
-  localStorage.setItem("igf", document.getElementById("igf").value);
-  localStorage.setItem("igl", document.getElementById("igl").value);
-  localStorage.setItem("ttf", document.getElementById("ttf").value);
-  localStorage.setItem("wac", document.getElementById("wac").value);
-
-  alert("Harga disimpan!");
+services.forEach(s=>{
+localStorage.setItem(s.key, document.getElementById(s.key).value);
+localStorage.setItem("status_"+s.key, document.getElementById("status_"+s.key).value);
+});
+localStorage.setItem("stokNokos", document.getElementById("stokNokos").value);
+alert("Tersimpan!");
+location.reload();
 }
 
-// LOAD HARGA
-function loadHarga(){
-  document.getElementById("igf").value = localStorage.getItem("igf") || 8;
-  document.getElementById("igl").value = localStorage.getItem("igl") || 6;
-  document.getElementById("ttf").value = localStorage.getItem("ttf") || 35;
-  document.getElementById("wac").value = localStorage.getItem("wac") || 50;
+// ===== LOGIN =====
+function login(){
+if(user.value=="AdminGanteng" && pass.value=="SmartPanel"){
+loginPage.style.display="none";
+adminPage.style.display="block";
+buildAdmin();
+loadAdmin();
+}else alert("Salah");
 }
 
-// PAKAI HARGA DARI STORAGE
-function getHarga(key, defaultVal){
-  return Number(localStorage.getItem(key)) || defaultVal;
-}
-const harga = {
-  igf: getHarga("igf", 8),
-  igl: getHarga("igl", 6),
-  igv: getHarga("igv", 1),
+function logout(){ location.reload(); }
 
-  ttf: getHarga("ttf", 35),
-  ttl: getHarga("ttl", 7),
-  ttv: getHarga("ttv", 1),
-
-  wac: getHarga("wac", 50),
-  react: getHarga("react", 30)
-};
-
-const minOrder = 500;
-
-function hitung(jumlahId, totalId, jenis){
-  let jumlah = document.getElementById(jumlahId).value || 0;
-  let total = jumlah * harga[jenis];
-  document.getElementById(totalId).innerText =
-    Number(total).toLocaleString("id-ID");
+// ===== HITUNG =====
+function hitung(jumlahId,totalId,jenis){
+let j = document.getElementById(jumlahId).value||0;
+let h = getHarga(jenis,1);
+document.getElementById(totalId).innerText =
+(j*h).toLocaleString("id-ID");
 }
 
+// ===== STATUS UPDATE =====
+function updateStatus(){
+services.forEach(s=>{
+let st = getStatus(s.key);
+let el = document.getElementById("status_"+s.key);
+let btn = document.getElementById("btn_"+s.key);
+
+if(!el || !btn) return;
+
+if(st==="on"){
+el.innerText="✅ Online";
+btn.disabled=false;
+}else{
+el.innerText="❌ Error";
+btn.disabled=true;
+}
+});
+}
+
+// ===== ORDER =====
 function order(jenis, linkId, jumlahId){
   let link = document.getElementById(linkId).value;
   let jumlah = document.getElementById(jumlahId).value;
-  let total = jumlah * harga[jenis];
-  
-  function getHarga(key, defaultVal){
-  return Number(localStorage.getItem(key)) || defaultVal;
-}
+  let hargaPer = getHarga(jenis, 0);
+  let total = jumlah * hargaPer;
+
+  let overlay = document.getElementById("overlay");
 
   if(!link) return alert("Isi link dulu");
-  if(total < minOrder) return alert("Minimal Rp 500");
+  if(total < 500) return alert("Min 500");
 
-  let pesan = `Halo Admin
-Order ${jenis.toUpperCase()}
+  // khusus nokos
+  if(jenis === "nokos"){
+    let stok = getStok();
+    if(stok <= 0) return alert("Stok habis!");
+    localStorage.setItem("stokNokos", stok - 1);
+  }
 
-Jumlah: ${jumlah}
-Total: Rp ${total}
-Link: ${link}`;
+  let pesan = "Halo Admin\n" +
+  "Order " + jenis.toUpperCase() + "\n\n" +
+  "Jumlah: " + jumlah + "\n" +
+  "Total: Rp " + total + "\n" +
+  "Link: " + link;
 
-  // tampilkan overlay
-  let overlay = document.getElementById("overlay");
-  let bar = document.getElementById("bar");
-  let check = document.getElementById("check");
-  let text = document.getElementById("statusText");
-
+  // tampil animasi
   overlay.style.display = "flex";
-  bar.style.width = "0%";
-  check.style.display = "none";
 
-  // animasi progress
   setTimeout(() => {
-    bar.style.width = "100%";
-  }, 100);
-
-  // selesai → centang
-  setTimeout(() => {
-    document.querySelector(".spinner").style.display = "none";
-    text.innerText = "Berhasil! Mengalihkan ke WhatsApp...";
-    check.style.display = "block";
-  }, 1500);
-
-  // buka WA
-  setTimeout(() => {
-    window.open("https://wa.me/62895324562321?text=" + encodeURIComponent(pesan));
-    overlay.style.display = "none";
-    
-    // reset
-    document.querySelector(".spinner").style.display = "block";
-    text.innerText = "Memproses order...";
-  }, 2300);
+    window.location.href =
+      "https://wa.me/62895324562321?text=" +
+      encodeURIComponent(pesan);
+  }, 800);
 }
+
+// ===== INIT =====
+buildPanel();
+updateStatus();
+
 </script>
 
 </body>
-</html>
+</html
