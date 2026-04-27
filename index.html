@@ -7,337 +7,227 @@
 <style>
 body{
   margin:0;
-  font-family:'Segoe UI',sans-serif;
-  background: radial-gradient(circle at top,#020617,#0f172a);
+  font-family:Arial;
+  background: linear-gradient(135deg,#020617,#0f172a);
   color:white;
+  text-align:center;
 }
 
-/* HEADER */
-h1{
-  text-align:center;
-  color:#38bdf8;
-  text-shadow:0 0 15px #38bdf8;
-}
-.sub{
-  text-align:center;
-  opacity:0.7;
-}
+h1{ margin:20px; color:#38bdf8; }
 
-/* GRID */
 .container{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:20px;
-  padding:20px;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
 }
 
-/* CARD */
 .card{
   background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(15px);
-  border-radius:15px;
-  padding:20px;
-  box-shadow:0 0 10px rgba(0,255,255,0.2);
-  transition:0.3s;
-  position:relative;
+  backdrop-filter: blur(10px);
+  border-radius:12px;
+  padding:16px;
+  margin:10px;
+  width:300px;
+  box-shadow:0 0 15px rgba(56,189,248,.3);
 }
 
-.card::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(120deg,transparent,rgba(0,255,255,0.2),transparent);
-  opacity:0;
-  transition:0.3s;
-  pointer-events:none;
-}
-
-.card:hover::before{ opacity:1; }
-
-.card:hover{
-  transform:translateY(-5px);
-  box-shadow:0 0 25px #38bdf8;
-}
-
-.card h3{ color:#38bdf8; }
-
-/* INPUT */
-input{
-  width:100%;
+select,input{
+  width:90%;
   padding:10px;
   margin:6px 0;
   border:none;
   border-radius:8px;
-  background:#0f172a;
-  color:white;
 }
 
-/* BUTTON */
 button{
-  width:100%;
   padding:10px;
+  width:95%;
   border:none;
-  border-radius:10px;
-  background:linear-gradient(45deg,#38bdf8,#0ea5e9);
-  color:white;
+  border-radius:8px;
+  background:#38bdf8;
+  color:black;
   font-weight:bold;
   cursor:pointer;
-  position:relative;
-  z-index:2;
 }
 
-/* LOGIN */
-#loginPage{
-  max-width:300px;
-  margin:40px auto;
-  padding:20px;
-  border-radius:15px;
-  background:rgba(255,255,255,0.05);
-  box-shadow:0 0 20px #38bdf8;
-}
-
-/* ADMIN */
-#adminPage{
-  max-width:400px;
-  margin:20px auto;
-  padding:20px;
-  border-radius:15px;
-  background:rgba(255,255,255,0.05);
-  box-shadow:0 0 20px #38bdf8;
-}
-
-/* OVERLAY */
-#overlay{
-  position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background:rgba(0,0,0,0.8);
+#adminBox{
   display:none;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  z-index:999;
-}
-
-.spinner{
-  border:5px solid #333;
-  border-top:5px solid #38bdf8;
-  border-radius:50%;
-  width:45px;
-  height:45px;
-  animation:spin 1s linear infinite;
-}
-
-@keyframes spin{
-  100%{transform:rotate(360deg);}
+  margin:20px;
+  padding:15px;
+  background:rgba(255,255,255,0.05);
+  border-radius:10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div id="loginPage">
-<h2>🔐 Admin Login</h2>
-<input id="user" placeholder="Username">
-<input id="pass" type="password" placeholder="Password">
-<button onclick="login()">Login</button>
-</div>
+<button onclick="toggleAdmin()">⚙️ Admin</button>
 
-<!-- ADMIN -->
-<div id="adminPage" style="display:none;">
-<h2>⚙️ Admin Panel</h2>
-<div id="adminList"></div>
-<button onclick="simpan()">💾 Simpan</button>
-<button onclick="logout()">🚪 Logout</button>
+<div id="adminBox">
+<h3>🔐 Admin Nokos</h3>
+<input id="adminUser" placeholder="Username">
+<input id="adminPass" type="password" placeholder="Password">
+<button onclick="loginAdmin()">Login</button>
+
+<div id="adminPanel" style="display:none;">
+<p>Harga Nokos:</p>
+<input id="setHarga" type="number">
+<p>Stok Nokos:</p>
+<input id="setStok" type="number">
+<button onclick="saveAdmin()">💾 Simpan</button>
+</div>
 </div>
 
 <h1>🚀 KYZY SMM PANEL</h1>
-<p class="sub">Semua Kebutuhan Sosmed Kalian ada disini🔥🔥</p>
 
-<div class="container" id="panel"></div>
-
-<!-- overlay -->
-<div id="overlay">
-<div class="spinner"></div>
-<p>Memproses order...</p>
-</div>
+<div class="container">
 
 <script>
+// ===== PAKET =====
+function paketHTML(type,id){
+const data = {
+igf:[1000,2000,3000,4000,5000,6000,7000,8000,9000,10000],
+igl:[1000,2000,3000,4000,5000,6000,7000,8000,9000,10000],
+igv:[1000,2000,3000,4000,5000,6000,7000,8000,9000,10000],
+ttf:[4000,6000,8000,10000,12000,14000,16000,18000,20000,22000],
+ttl:[1000,2000,3000,4000,5000,6000,7000,8000,9000,10000],
+ttv:[1000,2000,3000,4000,5000,6000,7000,8000,9000,10000],
+wac:[5000,9000,13000,17000,21000,25000,28000,32000,36000,40000],
+react:[3000,6000,9000,12000,15000,17000,20000,23000,26000,29000]
+};
 
-// DATA
-const services = [
-{key:"igf", name:"IG Followers", harga:8},
-{key:"igl", name:"IG Likes", harga:6},
-{key:"igv", name:"IG Views", harga:1},
+let html = `<select id="paket${id}" onchange="hitung('paket${id}','total${id}')">
+<option value="">Pilih Paket</option>`;
 
-{key:"ttf", name:"TikTok Followers", harga:35},
-{key:"ttl", name:"TikTok Likes", harga:7},
-{key:"ttv", name:"TikTok Views", harga:1},
+let qty = [100,200,300,400,500,600,700,800,900,1000];
 
-{key:"wac", name:"WA Member", harga:50},
-{key:"react", name:"WA Reaction", harga:30},
+data[type].forEach((h,i)=>{
+html += `<option data-harga="${h}">${qty[i]} - Rp${h.toLocaleString("id-ID")}</option>`;
+});
 
-{key:"nokos", name:"Nokos Indo 🇮🇩", harga:5000}
-];
+html += `</select>`;
+return html;
+}
 
-// GET
-function getHarga(k,d){ return Number(localStorage.getItem(k)) || d }
-function getStatus(k){ return localStorage.getItem("status_"+k) || "on" }
-function getStok(){ return Number(localStorage.getItem("stokNokos")) || 0 }
-
-// PANEL
-function buildPanel(){
-let panel = document.getElementById("panel");
-panel.innerHTML="";
-
-services.forEach((s,i)=>{
-panel.innerHTML+=`
+// ===== CARD =====
+function card(id,title,type,placeholder){
+return `
 <div class="card">
-<h3>${s.name}</h3>
-<p id="status_${s.key}"></p>
-
-${s.key === "nokos" ? `
-<p>💰 Harga: Rp ${getHarga("nokos",5000)}</p>
-<p>📦 Stok: <span id="stokNokos">${getStok()}</span></p>
-<input id="link${i}" placeholder="Catatan (opsional)">
-` : `
-<input id="link${i}" placeholder="Masukkan link">
-`}
-
-<input type="number" min="1" id="jumlah${i}"
-oninput="hitung('jumlah${i}','total${i}','${s.key}')">
-
-<p>Rp <span id="total${i}">0</span></p>
-
-<button id="btn_${s.key}"
-onclick="order('${s.key}','link${i}','jumlah${i}')">Order</button>
+<h3>${title}</h3>
+<input id="link${id}" placeholder="${placeholder}">
+${paketHTML(type,id)}
+<p>Rp <span id="total${id}">0</span></p>
+<button onclick="order('${title}','link${id}','paket${id}')">Order</button>
 </div>`;
-});
 }
 
-// ADMIN
-function buildAdmin(){
-let html="";
-services.forEach(s=>{
-html+=`
-<p>${s.name}</p>
-<input id="${s.key}">
-<select id="status_${s.key}">
-<option value="on">ON</option>
-<option value="off">OFF</option>
-</select><br><br>`;
-});
-html+=`<p>Stok Nokos</p><input id="stokNokos">`;
-adminList.innerHTML=html;
+// ===== RENDER =====
+document.write(
+card(1,"IG Followers","igf","Link IG")+
+card(2,"IG Likes","igl","Link Post")+
+card(3,"IG Views","igv","Link Reels")+
+card(4,"TikTok Followers","ttf","Link TikTok")+
+card(5,"TikTok Likes","ttl","Link Video")+
+card(6,"TikTok Views","ttv","Link Video")+
+card(7,"WhatsApp Member","wac","Link Saluran")+
+card(8,"WhatsApp Reaction","react","Link Post")
+);
+
+// ===== HITUNG =====
+function hitung(selectId,totalId){
+let s=document.getElementById(selectId);
+let h=s.options[s.selectedIndex].dataset.harga;
+if(!h)return;
+document.getElementById(totalId).innerText=
+Number(h).toLocaleString("id-ID");
 }
 
-function loadAdmin(){
-services.forEach(s=>{
-document.getElementById(s.key).value = getHarga(s.key,s.harga);
-document.getElementById("status_"+s.key).value = getStatus(s.key);
-});
-stokNokos.value = getStok();
+// ===== ORDER SOSMED =====
+function order(jenis,linkId,paketId){
+let link=document.getElementById(linkId).value;
+let s=document.getElementById(paketId);
+let paket=s.options[s.selectedIndex].text;
+let harga=s.options[s.selectedIndex].dataset.harga;
+
+if(!link)return alert("Isi link dulu");
+if(!harga)return alert("Pilih paket dulu");
+
+window.open("https://wa.me/62895324562321?text="+encodeURIComponent(
+`Halo Admin 🚀
+Order ${jenis}
+
+Paket: ${paket}
+Total: Rp ${Number(harga).toLocaleString("id-ID")}
+Link: ${link}`
+));
 }
 
-function simpan(){
-services.forEach(s=>{
-localStorage.setItem(s.key, document.getElementById(s.key).value);
-localStorage.setItem("status_"+s.key, document.getElementById("status_"+s.key).value);
-});
-localStorage.setItem("stokNokos", stokNokos.value);
-alert("Tersimpan!");
-location.reload();
+// ===== NOKOS =====
+function getHargaNokos(){
+return Number(localStorage.getItem("hargaNokos"))||5000;
 }
+function getStok(){
+return Number(localStorage.getItem("stokNokos"))||5;
+}function updateUI(){
+let hargaEl = document.getElementById("hargaNokos");
+let stokEl = document.getElementById("stokNokos");
 
-// LOGIN
-function login(){
-if(user.value=="MyKyzyAdminPanel" && pass.value=="Ditzzzz3441"){
-loginPage.style.display="none";
-adminPage.style.display="block";
-buildAdmin();
-loadAdmin();
-}else alert("Login salah!");
+if(!hargaEl || !stokEl) return; // ⛔ biar ga error
+
+hargaEl.innerText = getHargaNokos().toLocaleString("id-ID");
+stokEl.innerText = "Stok: " + getStok();
 }
+function orderNokos(){
+let stok=getStok();
+if(stok<=0)return alert("Nokos habis!");
+localStorage.setItem("stokNokos",stok-1);
+updateUI();
 
-function logout(){ location.reload(); }
-
-// HITUNG
-function hitung(j,t,jenis){
-let jumlah = Number(document.getElementById(j).value)||0;
-let harga = getHarga(jenis,1);
-document.getElementById(t).innerText =
-(jumlah*harga).toLocaleString("id-ID");
-}
-
-// STATUS
-function updateStatus(){
-services.forEach(s=>{
-let st = getStatus(s.key);
-let el = document.getElementById("status_"+s.key);
-let btn = document.getElementById("btn_"+s.key);
-
-if(st==="on"){
-el.innerText="✅ Online";
-btn.disabled=false;
-}else{
-el.innerText="❌ Error";
-btn.disabled=true;
-}
-});
-}
-
-// ORDER
-function order(jenis, linkId, jumlahId){
-let link = document.getElementById(linkId).value;
-let jumlah = Number(document.getElementById(jumlahId).value)||0;
-let harga = getHarga(jenis,1);
-let total = jumlah*harga;
-
-if(jenis !== "nokos" && !link) return alert("Isi link dulu");
-if(jumlah<=0) return alert("Masukin jumlah dulu");
-
-// NOKOS
-if(jenis==="nokos"){
-let stok = getStok();
-if(stok <= 0) return alert("Nokos habis!");
-
-localStorage.setItem("stokNokos", stok-1);
-document.getElementById("stokNokos").innerText = stok-1;
-}
-
-// PESAN
-let pesan;
-
-if(jenis==="nokos"){
-pesan = `Halo Admin 🚀
+window.open("https://wa.me/62895324562321?text="+encodeURIComponent(
+`Halo Admin 🚀
 Order NOKOS INDONESIA 🇮🇩
 
-Jumlah: ${jumlah}
-Total: Rp ${total}
-Catatan: ${link || "-"}`;
-}else{
-pesan = `Halo Admin 🚀
-Order ${jenis.toUpperCase()}
-
-Jumlah: ${jumlah}
-Total: Rp ${total}
-Link: ${link}`;
+Total: Rp ${getHargaNokos()}`
+));
 }
 
-// LOADING
-overlay.style.display="flex";
-
-setTimeout(()=>{
-window.location.href="https://wa.me/62895324562321?text="+encodeURIComponent(pesan);
-},1000);
+// ===== ADMIN =====
+function toggleAdmin(){
+adminBox.style.display=
+adminBox.style.display==="none"?"block":"none";
+}
+function loginAdmin(){
+if(adminUser.value==="admin"&&adminPass.value==="kyzy123"){
+adminPanel.style.display="block";
+setHarga.value=getHargaNokos();
+setStok.value=getStok();
+}else alert("Login salah!");
+}
+function saveAdmin(){
+localStorage.setItem("hargaNokos",setHarga.value);
+localStorage.setItem("stokNokos",setStok.value);
+updateUI();
+alert("Tersimpan!");
 }
 
 // INIT
-buildPanel();
-updateStatus();
+updateUI();
 
+window.onload = function(){
+  updateUI();
+}
 </script>
+
+<!-- NOKOS (SUDAH NYATU) -->
+<div class="card">
+<h3>📱 Nokos Indonesia 🇮🇩</h3>
+<p>Harga: Rp <span id="hargaNokos"></span></p>
+<p id="stokNokos"></p>
+<button onclick="orderNokos()">⚡ Beli Nokos</button>
+</div>
+
+</div>
 
 </body>
 </html>
